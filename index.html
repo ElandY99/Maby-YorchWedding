@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Estás invitado a la boda de Valentina y Sebastián. ¡Celebra con nosotros este día tan especial!">
+  <title>Valentina & Sebastián — Nuestra Boda</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="index.css">
+
+  <!-- AOS — Animate On Scroll -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       SECTION 1 — Hero
+       ============================================================ -->
+  <section id="hero">
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+    <div class="hero-content">
+      <p class="hero-top-text">Nuestra Boda</p>
+
+      <!-- PLACEHOLDER: Replace names below -->
+      <h1 class="hero-names">
+        Mabel
+        <span class="amp">&</span>
+        Jorge
+      </h1>
+
+      <p class="hero-date">26 · Abril · 2025</p>
+
+      <div class="hero-ornament">
+        <img src="assets/icons/flowers-bouquet-svgrepo-com.svg" alt="Decoración floral" width="60" height="60">
+      </div>
+    </div>
+
+    <div class="scroll-indicator" id="scroll-indicator" role="button" aria-label="Desplazar hacia abajo" tabindex="0">
+      <span class="chevron"></span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 2 — Message
+       ============================================================ -->
+  <section id="message" class="section-padding">
+    <div class="container">
+      <div class="message-card" data-aos="fade-up">
+        <span class="quote-mark">"</span>
+
+        <!-- PLACEHOLDER: Replace message text below -->
+        <p class="message-text">
+          Cada historia de amor es hermosa, pero la nuestra es nuestra favorita.
+          Queremos compartir este momento tan especial con las personas que más
+          queremos. Tu presencia hará que este día sea aún más inolvidable.
+        </p>
+
+        <div class="section-divider">
+          <span class="line"></span>
+          <img class="ornament" src="assets/icons/heart-angle-svgrepo-com.svg" alt="" width="28" height="28">
+          <span class="line"></span>
+        </div>
+
+        <!-- PLACEHOLDER: Replace date below -->
+        <span class="message-date-highlight" data-aos="zoom-in" data-aos-delay="200">
+          Sábado, 26 de Abril de 2025
+        </span>
+
+        <div class="message-flowers" data-aos="fade-up" data-aos-delay="300">
+          <img src="assets/icons/flowers-svgrepo-com.svg" alt="" width="40" height="40">
+          <img src="assets/icons/3-flowers-svgrepo-com.svg" alt="" width="40" height="40">
+          <img src="assets/icons/flowers-svgrepo-com.svg" alt="" width="40" height="40">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 3 — Locations
+       ============================================================ -->
+  <section id="locations" class="section-padding">
+    <div class="container">
+      <h2 class="locations-title" data-aos="fade-up">Lugares</h2>
+      <p class="locations-subtitle" data-aos="fade-up" data-aos-delay="100">Dónde celebraremos este día tan especial</p>
+
+      <div class="section-divider" data-aos="fade-up" data-aos-delay="150">
+        <span class="line"></span>
+        <img class="ornament" src="assets/icons/flower-shape-of-five-petals-svgrepo-com.svg" alt="" width="28"
+          height="28">
+        <span class="line"></span>
+      </div>
+
+      <div class="locations-grid">
+
+        <!-- ---- Ceremony Card ---- -->
+        <div class="location-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="location-card-header">
+            <div class="location-icon">
+              <i data-lucide="church"></i>
+            </div>
+            <p class="location-label">Ceremonia</p>
+            <!-- PLACEHOLDER: Replace ceremony venue name and address -->
+            <h3 class="location-name">Parroquia San Agustín</h3>
+            <p class="location-address">Av. Libertador 1234, Buenos Aires, Argentina</p>
+            <p class="location-time">
+              <i data-lucide="clock"></i>
+              16:00 hs
+            </p>
+            <!-- PLACEHOLDER: Replace Google Maps link -->
+            <a class="btn-maps" href="https://maps.google.com/?q=Parroquia+San+Agustin+Buenos+Aires" target="_blank"
+              rel="noopener noreferrer">
+              <i data-lucide="map-pin"></i>
+              Abrir en Google Maps
+              <i data-lucide="external-link"></i>
+            </a>
+          </div>
+          <!-- PLACEHOLDER: Replace Google Maps embed URL below -->
+          <iframe class="location-map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.0167!2d-58.3816!3d-34.6037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDM2JzEzLjMiUyA1OMKwMjInNTMuOCJX!5e0!3m2!1ses!2sar!4v1"
+            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa de la ceremonia">
+          </iframe>
+        </div>
+
+        <!-- ---- Reception Card ---- -->
+        <div class="location-card" data-aos="fade-up" data-aos-delay="350">
+          <div class="location-card-header">
+            <div class="location-icon">
+              <i data-lucide="party-popper"></i>
+            </div>
+            <p class="location-label">Recepción</p>
+            <!-- PLACEHOLDER: Replace reception venue name and address -->
+            <h3 class="location-name">Salón La Estancia</h3>
+            <p class="location-address">Ruta 8, Km 52, Pilar, Buenos Aires, Argentina</p>
+            <p class="location-time">
+              <i data-lucide="clock"></i>
+              19:00 hs
+            </p>
+            <!-- PLACEHOLDER: Replace Google Maps link -->
+            <a class="btn-maps" href="https://maps.google.com/?q=Salon+La+Estancia+Pilar" target="_blank"
+              rel="noopener noreferrer">
+              <i data-lucide="map-pin"></i>
+              Abrir en Google Maps
+              <i data-lucide="external-link"></i>
+            </a>
+          </div>
+          <!-- PLACEHOLDER: Replace Google Maps embed URL below -->
+          <iframe class="location-map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3284.0167!2d-58.9140!3d-34.4589!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDI3JzMyLjAiUyA1OMKwNTQnNTAuNCJX!5e0!3m2!1ses!2sar!4v1"
+            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa de la recepción">
+          </iframe>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SECTION 4 — RSVP / Confirm Attendance
+       ============================================================ -->
+  <section id="rsvp" class="section-padding">
+    <div class="container">
+      <div class="rsvp-icon" data-aos="zoom-in">
+        <img src="assets/icons/couple-marriage-heart-svgrepo-com.svg" alt="" width="56" height="56">
+      </div>
+
+      <h2 class="rsvp-title" data-aos="fade-up">Confirmar Asistencia</h2>
+
+      <p class="rsvp-text" data-aos="fade-up" data-aos-delay="100">
+        Nos encantaría contar con tu presencia en este día tan especial.
+        Por favor, confirma tu asistencia para que podamos preparar
+        todo con mucho cariño.
+      </p>
+
+      <div class="section-divider" data-aos="fade-up" data-aos-delay="150">
+        <span class="line"></span>
+        <img class="ornament" src="assets/icons/heart-angle-svgrepo-com.svg" alt="" width="28" height="28">
+        <span class="line"></span>
+      </div>
+
+      <!-- PLACEHOLDER: Replace Google Form URL below -->
+      <a id="btn-rsvp" class="btn-rsvp" href="https://forms.gle/AN4W1b6Nxz4vVUN68" target="_blank"
+        rel="noopener noreferrer" data-aos="zoom-in" data-aos-delay="200">
+        <i data-lucide="heart"></i>
+        Confirmar mi asistencia
+        <i data-lucide="external-link"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer">
+    <p>Hecho con <span class="heart-icon">♥</span> para Valentina & Sebastián</p>
+  </footer>
+
+  <!-- ============================================================
+       FLOATING CONTROLS
+       ============================================================ -->
+
+  <!-- Theme toggle (top-right) -->
+  <div class="theme-toggle">
+    <button class="fab" id="theme-toggle-btn" aria-label="Cambiar tema" title="Cambiar tema">
+      <i data-lucide="sun"></i>
+    </button>
+  </div>
+
+  <!-- Music + Back-to-top (bottom-right) -->
+  <div class="floating-controls">
+    <button class="fab" id="music-toggle-btn" aria-label="Activar/desactivar música" title="Música">
+      <i data-lucide="volume-x" id="music-icon"></i>
+    </button>
+  </div>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- AOS -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <!-- Main JS -->
+  <script src="index.js"></script>
+</body>
+
+</html>
