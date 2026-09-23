@@ -295,4 +295,121 @@
     heroObserver.observe(document.getElementById('hero'));
   }
 
+  // ----------------------------------------------------------------
+  // Tengwar → Serif Transcription Animation (reusable)
+  // ----------------------------------------------------------------
+  function initTranscriptionAnimation(target, options) {
+    options = options || {};
+
+    var el = typeof target === 'string'
+      ? document.querySelector(target)
+      : target;
+
+    if (!el) return null;
+
+    var config = {
+      baseDelay: options.baseDelay || 30,        // ms entre cada carácter
+      scatter: options.scatter || 40,            // aleatoriedad extra por carácter
+      startDelay: options.startDelay || 600,     // delay antes de arrancar tras hacerse visible
+      fallbackDelay: options.fallbackDelay || 1500, // delay si no hay IntersectionObserver
+      cleanupPadding: options.cleanupPadding || 600, // margen extra al remover la clase 'transcribing'
+      threshold: options.threshold != null ? options.threshold : 0.3,
+      transcribingClass: options.transcribingClass || 'transcribing',
+      transcribedClass: options.transcribedClass || 'transcribed',
+      charClass: options.charClass || 'char',
+    };
+
+    // Normaliza el texto: trim y colapsa espacios de la indentación del HTML
+    var originalText = el.textContent
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    el.innerHTML = '';
+    el.classList.add(config.transcribingClass);
+
+    var charSpans = [];
+    for (var ci = 0; ci < originalText.length; ci++) {
+      var span = document.createElement('span');
+      span.classList.add(config.charClass);
+      span.textContent = originalText[ci] === ' ' ? ' ' : originalText[ci];
+      charSpans.push(span);
+      el.appendChild(span);
+    }
+
+    var transcriptionStarted = false;
+
+    function startTranscription() {
+      if (transcriptionStarted) return;
+      transcriptionStarted = true;
+
+      // Lock the element's height to its current (tengwar) size to prevent reflow
+      var tengwarHeight = el.offsetHeight;
+      el.style.height = tengwarHeight + 'px';
+      el.style.overflow = 'hidden';
+
+      var totalChars = charSpans.length;
+
+      charSpans.forEach(function (span, index) {
+        setTimeout(function () {
+          span.classList.add(config.transcribedClass);
+        }, index * config.baseDelay + Math.random() * config.scatter);
+      });
+
+      setTimeout(function () {
+        el.classList.remove(config.transcribingClass);
+
+        // Smoothly transition to the natural (serif) height
+        var naturalHeight = el.scrollHeight;
+        el.style.transition = 'height 0.6s ease';
+        el.style.height = naturalHeight + 'px';
+
+        // After the height transition, remove inline styles
+        setTimeout(function () {
+          el.style.height = '';
+          el.style.overflow = '';
+          el.style.transition = '';
+        }, 650);
+
+        if (typeof options.onComplete === 'function') {
+          options.onComplete(el);
+        }
+      }, totalChars * config.baseDelay + config.cleanupPadding);
+    }
+
+    // Dispara la animación cuando el elemento entra en el viewport
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            setTimeout(startTranscription, config.startDelay);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: config.threshold });
+
+      observer.observe(el);
+    } else {
+      setTimeout(startTranscription, config.fallbackDelay);
+    }
+
+    // API pública por si querés controlarlo manualmente
+    return {
+      start: startTranscription,
+      element: el,
+      chars: charSpans,
+    };
+  }
+
+  var el = document.querySelectorAll('.message-text');
+  el.forEach(e => {
+    initTranscriptionAnimation(e, {
+      baseDelay: 50,
+      startDelay: 500,
+      onComplete: function (e) {
+        console.log('Transcripción terminada en', e);
+      }
+    });
+  })
+
+
 })();

@@ -5,6 +5,13 @@
 /* ---------- Google Fonts ---------- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Parisienne&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
+@font-face {
+  font-family: 'tengwar';
+  src: url('assets/fonts/QUENYA.TTF');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* ---------- CSS Reset ---------- */
 *,
 *::before,
@@ -299,13 +306,46 @@ svg {
 }
 
 .message-text {
-  font-family: var(--font-serif);
+  font-family: 'tengwar', var(--font-serif);
   font-size: clamp(1.1rem, 2.5vw, 1.35rem);
   font-weight: 400;
   font-style: italic;
   color: var(--text-secondary);
   line-height: 1.9;
-  margin-bottom: var(--gap-lg);
+}
+
+/* Tengwar → Serif transcription animation */
+.message-text.transcribing {
+  font-family: 'tengwar', var(--font-serif);
+}
+
+.message-text .char {
+  display: inline;
+  font-family: 'tengwar', var(--font-serif);
+  transition: color 0.4s ease;
+}
+
+.message-text .char.transcribed {
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+  animation: charReveal 0.6s ease forwards;
+}
+
+@keyframes charReveal {
+  0% {
+    color: var(--accent-soft);
+    text-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  50% {
+    color: var(--accent);
+    text-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  100% {
+    color: var(--text-secondary);
+    text-shadow: none;
+  }
 }
 
 .message-date-highlight {
