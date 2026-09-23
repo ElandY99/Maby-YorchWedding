@@ -63,9 +63,9 @@
   const audio = new Audio('assets/music/wedding.mp3');
   audio.loop = true;
   audio.volume = 0.4;
+  audio.preload = 'auto';
 
   let isPlaying = false;
-  let hasInteracted = false;
 
   function setMusicIcon(playing) {
     musicBtn.innerHTML = '';
@@ -74,22 +74,18 @@
     iconEl.id = 'music-icon';
     musicBtn.appendChild(iconEl);
     lucide.createIcons({ nodes: [musicBtn] });
-
-    if (playing) {
-      musicBtn.classList.add('music-playing');
-    } else {
-      musicBtn.classList.remove('music-playing');
-    }
+    musicBtn.classList.toggle('music-playing', playing);
   }
 
   function playMusic() {
-    audio.play().then(function () {
+    return audio.play().then(() => {
       isPlaying = true;
       setMusicIcon(true);
-    }).catch(function () {
-      // Autoplay blocked — will retry on interaction
+      return true;
+    }).catch(() => {
       isPlaying = false;
       setMusicIcon(false);
+      return false;
     });
   }
 
@@ -99,34 +95,55 @@
     setMusicIcon(false);
   }
 
-  // Try autoplay
+  // Intento de autoplay (funciona en PC; en móvil suele ser bloqueado)
   playMusic();
 
-  // On first interaction, start music if not already playing
+  // Reintentar con el primer gesto REAL del usuario, sin quitar
+  // los listeners hasta que el play tenga éxito.
+  const interactionEvents = ['click', 'touchend', 'keydown'];
+
   function onFirstInteraction() {
-    if (!hasInteracted) {
-      hasInteracted = true;
-      if (!isPlaying) {
-        playMusic();
-      }
-      document.removeEventListener('click', onFirstInteraction);
-      document.removeEventListener('scroll', onFirstInteraction);
-      document.removeEventListener('touchstart', onFirstInteraction);
+    if (isPlaying) {
+      removeInteractionListeners();
+      return;
     }
+    playMusic().then((success) => {
+      if (success) {
+        removeInteractionListeners();
+      }
+    });
   }
 
-  document.addEventListener('click', onFirstInteraction, { once: false });
-  document.addEventListener('scroll', onFirstInteraction, { once: false });
-  document.addEventListener('touchstart', onFirstInteraction, { once: false });
+  function removeInteractionListeners() {
+    interactionEvents.forEach((evt) =>
+      document.removeEventListener(evt, onFirstInteraction)
+    );
+  }
 
-  musicBtn.addEventListener('click', function (e) {
-    e.stopPropagation(); // Don't trigger onFirstInteraction from this button
+  interactionEvents.forEach((evt) =>
+    document.addEventListener(evt, onFirstInteraction, { passive: true })
+  );
+
+  // ----------------------------------------------------------------
+  // Botón de música
+  // ----------------------------------------------------------------
+  function handleButtonToggle(e) {
+    e.stopPropagation();
     if (isPlaying) {
       pauseMusic();
     } else {
       playMusic();
     }
-  });
+    // Si el usuario usa el botón, ya no hace falta seguir escuchando
+    removeInteractionListeners();
+  }
+
+  // Evita que el toque del botón dispare el "first interaction" del documento
+  ['touchstart', 'touchend'].forEach((evt) =>
+    musicBtn.addEventListener(evt, (e) => e.stopPropagation(), { passive: true })
+  );
+
+  musicBtn.addEventListener('click', handleButtonToggle);
 
   // ----------------------------------------------------------------
   // 4. Scroll Indicator
