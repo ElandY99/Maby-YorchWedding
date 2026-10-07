@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="Estás invitado a la boda de Valentina y Sebastián. ¡Celebra con nosotros este día tan especial!">
-  <title>Valentina & Sebastián — Nuestra Boda</title>
+    content="Estás invitado a la boda de Mabel y Jorge. ¡Celebra con nosotros este día tan especial!">
+  <title>Mabel & Jorge — Nuestra Boda</title>
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="index.css">
@@ -64,7 +64,7 @@
 
         <!-- PLACEHOLDER: Replace date below -->
         <span class="message-date-highlight" data-aos="zoom-in" data-aos-delay="200">
-          Sábado, 26 de Abril de 2025
+          Miércoles, 23 de Diciembre de 2026
         </span>
 
         <div class="message-flowers" data-aos="fade-up" data-aos-delay="300">
@@ -172,7 +172,7 @@
   <!-- ============================================================
        SECTION 4 — RSVP / Confirm Attendance
        ============================================================ -->
-  <section id="rsvp" class="section-padding">
+  <section id="rsvp" class="section-padding rsvp-hidden">
     <div class="container">
       <div class="rsvp-icon" data-aos="zoom-in">
         <img src="assets/icons/couple-marriage-heart-svgrepo-com.svg" alt="" width="56" height="56">
@@ -192,13 +192,124 @@
         <span class="line"></span>
       </div>
 
-      <!-- PLACEHOLDER: Replace Google Form URL below -->
-      <a id="btn-rsvp" class="btn-rsvp" href="https://forms.gle/AN4W1b6Nxz4vVUN68" target="_blank"
-        rel="noopener noreferrer" data-aos="zoom-in" data-aos-delay="200">
-        <i data-lucide="heart"></i>
-        Confirmar mi asistencia
-        <i data-lucide="external-link"></i>
-      </a>
+      <!-- Dynamic RSVP Card -->
+      <div id="rsvp-card" class="rsvp-card" data-state="loading" data-aos="fade-up" data-aos-delay="200">
+        <!-- 1. Loading State -->
+        <div class="rsvp-state rsvp-state-loading" id="rsvp-loading-view">
+          <div class="rsvp-spinner" aria-hidden="true"></div>
+          <p class="rsvp-loading-text">Consultando tu invitación...</p>
+        </div>
+
+        <!-- 2. Invalid Invitation State -->
+        <div class="rsvp-state rsvp-state-invalid" id="rsvp-invalid-view">
+          <div class="rsvp-status-icon error">
+            <i data-lucide="alert-circle"></i>
+          </div>
+          <h3 class="rsvp-state-title">Invitación no válida</h3>
+          <p class="rsvp-state-desc">
+            No encontramos ninguna invitación con el código proporcionado. Por favor, verificá haber ingresado al enlace completo que te enviamos.
+          </p>
+        </div>
+
+        <!-- 3. Network / Connection Error State -->
+        <div class="rsvp-state rsvp-state-error" id="rsvp-error-view">
+          <div class="rsvp-status-icon error">
+            <i data-lucide="wifi-off"></i>
+          </div>
+          <h3 class="rsvp-state-title">Error de conexión</h3>
+          <p class="rsvp-state-desc" id="rsvp-error-text">
+            No pudimos conectar con el servidor para consultar tu invitación. Por favor, revisá tu conexión e intentá de nuevo.
+          </p>
+          <button type="button" class="btn-rsvp-secondary" id="rsvp-retry-btn">
+            <i data-lucide="refresh-cw"></i>
+            Reintentar
+          </button>
+        </div>
+
+        <!-- 4. Ready / Form State -->
+        <div class="rsvp-state rsvp-state-ready" id="rsvp-ready-view">
+          <div class="rsvp-guest-header">
+            <span class="rsvp-welcome-label">Invitación para</span>
+            <h3 class="rsvp-guest-name" id="rsvp-guest-name">—</h3>
+            <div class="rsvp-badges">
+              <span class="rsvp-badge quota-badge" id="rsvp-quota-badge">
+                <i data-lucide="users"></i>
+                <span id="rsvp-quota-text">Cupo: — personas</span>
+              </span>
+              <span class="rsvp-badge status-badge" id="rsvp-status-badge">
+                <i data-lucide="clock"></i>
+                <span id="rsvp-status-text">Pendiente</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="rsvp-alert-notice" id="rsvp-already-confirmed-banner" style="display: none;">
+            <i data-lucide="info"></i>
+            <span id="rsvp-already-confirmed-text"></span>
+          </div>
+
+          <form id="rsvp-form" class="rsvp-form" novalidate>
+            <div class="rsvp-form-group">
+              <label class="rsvp-form-label">
+                ¿Cuántas personas asistirán?
+              </label>
+              <div class="rsvp-stepper-wrap">
+                <div class="rsvp-stepper">
+                  <button type="button" class="rsvp-step-btn" id="rsvp-minus-btn" aria-label="Disminuir asistentes">
+                    <i data-lucide="minus"></i>
+                  </button>
+                  <div class="rsvp-count-display">
+                    <input type="number" id="rsvp-cantidad" name="cantidad" min="0" max="1" value="1" readonly>
+                    <span class="rsvp-count-unit" id="rsvp-count-unit">persona</span>
+                  </div>
+                  <button type="button" class="rsvp-step-btn" id="rsvp-plus-btn" aria-label="Aumentar asistentes">
+                    <i data-lucide="plus"></i>
+                  </button>
+                </div>
+              </div>
+              <p class="rsvp-helper-text" id="rsvp-stepper-helper">
+                Podés confirmar entre 0 y <span id="rsvp-max-helper">1</span> asistentes. (0 indica que no podrán asistir).
+              </p>
+            </div>
+
+            <div class="rsvp-form-group">
+              <label for="rsvp-nota" class="rsvp-form-label">
+                Nota o dedicatoria <span class="rsvp-optional">(opcional)</span>
+              </label>
+              <textarea id="rsvp-nota" name="nota" class="rsvp-textarea" rows="3" maxlength="300"
+                placeholder="¿Alguna restricción alimentaria o dedicatoria para los novios?"></textarea>
+              <div class="rsvp-textarea-footer">
+                <span class="rsvp-char-counter"><span id="rsvp-char-count">0</span>/300</span>
+              </div>
+            </div>
+
+            <div class="rsvp-submit-container">
+              <button type="submit" class="btn-rsvp" id="rsvp-submit-btn">
+                <i data-lucide="heart"></i>
+                <span id="rsvp-submit-text">Confirmar mi asistencia</span>
+              </button>
+            </div>
+
+            <div class="rsvp-feedback" id="rsvp-form-feedback" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+
+        <!-- 5. Success State -->
+        <div class="rsvp-state rsvp-state-success" id="rsvp-success-view">
+          <div class="rsvp-status-icon success">
+            <i data-lucide="check-circle-2"></i>
+          </div>
+          <h3 class="rsvp-state-title" id="rsvp-success-title">¡Asistencia registrada!</h3>
+          <p class="rsvp-state-desc" id="rsvp-success-desc">
+            Muchas gracias por confirmar. ¡Nos llena de ilusión compartir este momento especial con vos!
+          </p>
+          <div class="rsvp-success-summary" id="rsvp-success-summary"></div>
+          <button type="button" class="btn-rsvp-secondary" id="rsvp-edit-btn">
+            <i data-lucide="edit-3"></i>
+            Modificar respuesta
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 
