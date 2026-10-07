@@ -411,7 +411,7 @@
   // ----------------------------------------------------------------
   // 6. Attendance Confirmation (RSVP) Controller
   // ----------------------------------------------------------------
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtTEWsDoI0nelF9RLHX0486ih0gArIEfBGfJRZnAV2amWukpXWZH0V4_7Ol0z9aXDuxw/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyze6HMoVHoSTzEoyDVPly419Ccdg6-2gtCd0doBVgwy85lrO3Ms-0Nh6NFA1toI7k67A/exec';
   const STORAGE_KEY_CODE = 'invitation_code';
 
   const rsvpSection = document.getElementById('rsvp');
