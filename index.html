@@ -6,319 +6,341 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="Estás invitado a la boda de Mabel y Jorge. ¡Celebra con nosotros este día tan especial!">
-  <title>Mabel & Jorge — Nuestra Boda</title>
+  <title>Mabel & Jorge — Nuestro Casamiento</title>
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="index.css">
 
   <!-- AOS — Animate On Scroll -->
   <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+
+  <!-- Early invitation code state check -->
+  <script>
+    (function () {
+      const code = new URLSearchParams(window.location.search).get('code');
+      if (!code || !code.trim()) {
+        document.documentElement.classList.add('state-error');
+      } else {
+        document.documentElement.classList.add('state-validating');
+      }
+    })();
+  </script>
 </head>
 
 <body class="light-theme">
+
+  <div class="cover" id="cover">
+    <div class="left"></div>
+    <div class="right"></div>
+  </div>
+
   <!-- ============================================================
+       PANTALLA DE ERROR DE CONEXIÓN
+       Se muestra únicamente si falta el atributo code o es incorrecto
+       ============================================================ -->
+  <div id="connection-error-screen" class="connection-error-screen" style="display: none;">
+    <div class="rsvp-card connection-error-card" data-state="error">
+      <div class="rsvp-status-icon error">
+        <i data-lucide="wifi-off"></i>
+      </div>
+      <h2 class="rsvp-state-title">Error de conexión</h2>
+      <p class="rsvp-state-desc" id="connection-error-desc">
+        No pudimos conectar con el servidor para consultar tu invitación. Por favor, revisá tu conexión e intentá de
+        nuevo.
+      </p>
+      <button type="button" class="btn-rsvp-secondary" id="global-retry-btn">
+        <i data-lucide="refresh-cw"></i>
+        <span>Reintentar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       CONTENIDO PRINCIPAL DE LA INVITACIÓN
+       ============================================================ -->
+  <main id="wedding-content" class="wedding-content">
+
+    <!-- ============================================================
        SECTION 1 — Hero
        ============================================================ -->
-  <section id="hero">
-    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+    <section id="hero">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
 
-    <div class="hero-content">
-      <p class="hero-top-text">Nuestra Boda</p>
+      <div class="hero-content">
+        <p class="hero-top-text">Nuestro Casamiento</p>
 
-      <!-- PLACEHOLDER: Replace names below -->
-      <h1 class="hero-names">
-        Mabel
-        <span class="amp">&</span>
-        Jorge
-      </h1>
+        <!-- PLACEHOLDER: Replace names below -->
+        <h1 class="hero-names">
+          Mabel
+          <span class="amp">&</span>
+          Jorge
+        </h1>
 
-      <p class="hero-date">23 · Diciembre · 2026</p>
+        <p class="hero-date">23 · Diciembre · 2026</p>
 
-      <div class="hero-ornament">
-        <img src="assets/icons/flowers-svgrepo-com-2.svg" alt="Decoración floral" width="60" height="60">
+        <div class="hero-ornament">
+          <img src="assets/icons/flowers-svgrepo-com-2.svg" alt="Decoración floral" width="60" height="60">
+        </div>
       </div>
-    </div>
 
-    <div class="scroll-indicator" id="scroll-indicator" role="button" aria-label="Desplazar hacia abajo" tabindex="0">
-      <span class="chevron"></span>
-    </div>
-  </section>
+      <div class="scroll-indicator" id="scroll-indicator" role="button" aria-label="Desplazar hacia abajo" tabindex="0">
+        <span class="chevron"></span>
+      </div>
+    </section>
 
-  <!-- ============================================================
+    <!-- ============================================================
        SECTION 2 — Message
        ============================================================ -->
-  <section id="message" class="section-padding">
-    <div class="container">
-      <div class="message-card" data-aos="fade-up">
+    <section id="message" class="section-padding">
+      <div class="container">
+        <div class="message-card" data-aos="fade-up">
 
-        <!-- PLACEHOLDER: Replace message text below -->
-        <p class="message-text">Hay momentos que se sueñan, otros se viven...</p>
-        <p class="message-text">Este 23 de diciembre daremos nuestro sí, un sí para toda la vida…. y queremos celebrarlo
-          con ustedes.</p>
+          <!-- PLACEHOLDER: Replace message text below -->
+          <p class="message-text">Hay momentos que se sueñan, otros se viven...</p>
+          <p class="message-text">Este 23 de diciembre daremos nuestro sí, un sí para toda la vida…. y queremos
+            celebrarlo
+            con ustedes.</p>
 
-        <div class="section-divider">
+          <div class="section-divider">
+            <span class="line"></span>
+            <img class="ornament" src="assets/icons/heart-angle-svgrepo-com.svg" alt="" width="28" height="28">
+            <span class="line"></span>
+          </div>
+
+          <!-- PLACEHOLDER: Replace date below -->
+          <span class="message-date-highlight" data-aos="zoom-in" data-aos-delay="200">
+            Miércoles, 23 de Diciembre de 2026
+          </span>
+
+          <div class="message-flowers" data-aos="fade-up" data-aos-delay="300">
+            <img src="assets/icons/flowers-svgrepo-com.svg" alt="" width="40" height="40">
+            <img src="assets/icons/3-flowers-svgrepo-com.svg" alt="" width="40" height="40">
+            <img src="assets/icons/flowers-svgrepo-com.svg" alt="" width="40" height="40">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+       SECTION 3 — Locations
+       ============================================================ -->
+    <section id="locations" class="section-padding">
+      <div class="container">
+        <h2 class="locations-title" data-aos="fade-up">Lugares</h2>
+        <p class="locations-subtitle" data-aos="fade-up" data-aos-delay="100">Dónde celebraremos este día tan especial
+        </p>
+        <div class="section-divider" data-aos="fade-up" data-aos-delay="150">
+          <span class="line"></span>
+          <img class="ornament" src="assets/icons/flower-shape-of-five-petals-svgrepo-com.svg" alt="" width="28"
+            height="28">
+          <span class="line"></span>
+        </div>
+        <div class="locations-timeline" data-aos="fade-up" data-aos-delay="200">
+          <!-- ---- Civil ---- -->
+          <div class="timeline-item">
+            <div class="timeline-node">
+              <div class="timeline-icon">
+                <i data-lucide="house"></i>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <p class="location-label">Civil</p>
+              <h3 class="location-name">CDR Registro de las Personas</h3>
+              <p class="location-address">Cnel. López 1995 (4° Tramo Costanera)</p>
+              <div class="timeline-meta">
+                <span class="location-time">
+                  <i data-lucide="clock"></i>
+                  18:30 hs
+                </span>
+                <a class="btn-maps-sm" href="https://maps.app.goo.gl/AEhemQeQ8kyQ3RwEA" target="_blank"
+                  rel="noopener noreferrer">
+                  <i data-lucide="map-pin"></i>
+                  Ver mapa
+                  <i data-lucide="external-link"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- ---- Ceremonia ---- -->
+          <div class="timeline-item">
+            <div class="timeline-node">
+              <div class="timeline-icon">
+                <i data-lucide="church"></i>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <p class="location-label">Ceremonia</p>
+              <h3 class="location-name">Sagrado Corazón de Jesús</h3>
+              <p class="location-address">Av. Juan Domingo Perón 1426</p>
+              <div class="timeline-meta">
+                <span class="location-time">
+                  <i data-lucide="clock"></i>
+                  20:00 hs
+                </span>
+                <a class="btn-maps-sm" href="https://maps.app.goo.gl/kHfJcasiymLKociy9" target="_blank"
+                  rel="noopener noreferrer">
+                  <i data-lucide="map-pin"></i>
+                  Ver mapa
+                  <i data-lucide="external-link"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- ---- Recepción ---- -->
+          <div class="timeline-item">
+            <div class="timeline-node">
+              <div class="timeline-icon">
+                <i data-lucide="party-popper"></i>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <p class="location-label">Recepción</p>
+              <h3 class="location-name">QUINCHO "DON MENDEZ"</h3>
+              <p class="location-address">C. 144 y 124, N3303 Posadas, Misiones</p>
+              <div class="timeline-meta">
+                <span class="location-time">
+                  <i data-lucide="clock"></i>
+                  21:00 hs
+                </span>
+                <a class="btn-maps-sm" href="https://maps.app.goo.gl/iwke9nWC4by1o56v7" target="_blank"
+                  rel="noopener noreferrer">
+                  <i data-lucide="map-pin"></i>
+                  Ver mapa
+                  <i data-lucide="external-link"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </section>
+
+    <!-- ============================================================
+       SECTION 4 — RSVP / Confirm Attendance
+       ============================================================ -->
+    <section id="rsvp" class="section-padding rsvp-hidden">
+      <div class="container">
+        <div class="rsvp-icon" data-aos="zoom-in">
+          <img src="assets/icons/couple-marriage-heart-svgrepo-com.svg" alt="" width="56" height="56">
+        </div>
+
+        <h2 class="rsvp-title" data-aos="fade-up">Confirmar Asistencia</h2>
+
+        <p class="rsvp-text" data-aos="fade-up" data-aos-delay="100">
+          Nos encantaría contar con tu presencia en este día tan especial.
+          Por favor, confirma tu asistencia para que podamos preparar
+          todo con mucho cariño.
+        </p>
+
+        <div class="section-divider" data-aos="fade-up" data-aos-delay="150">
           <span class="line"></span>
           <img class="ornament" src="assets/icons/heart-angle-svgrepo-com.svg" alt="" width="28" height="28">
           <span class="line"></span>
         </div>
 
-        <!-- PLACEHOLDER: Replace date below -->
-        <span class="message-date-highlight" data-aos="zoom-in" data-aos-delay="200">
-          Miércoles, 23 de Diciembre de 2026
-        </span>
+        <!-- Dynamic RSVP Card -->
+        <div id="rsvp-card" class="rsvp-card" data-state="loading" data-aos="fade-up" data-aos-delay="200">
+          <!-- 1. Loading State -->
+          <div class="rsvp-state rsvp-state-loading" id="rsvp-loading-view">
+            <div class="rsvp-spinner" aria-hidden="true"></div>
+            <p class="rsvp-loading-text">Consultando tu invitación...</p>
+          </div>
 
-        <div class="message-flowers" data-aos="fade-up" data-aos-delay="300">
-          <img src="assets/icons/flowers-svgrepo-com.svg" alt="" width="40" height="40">
-          <img src="assets/icons/3-flowers-svgrepo-com.svg" alt="" width="40" height="40">
-          <img src="assets/icons/flowers-svgrepo-com.svg" alt="" width="40" height="40">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================================================
-       SECTION 3 — Locations
-       ============================================================ -->
-  <section id="locations" class="section-padding">
-    <div class="container">
-      <h2 class="locations-title" data-aos="fade-up">Lugares</h2>
-      <p class="locations-subtitle" data-aos="fade-up" data-aos-delay="100">Dónde celebraremos este día tan especial</p>
-      <div class="section-divider" data-aos="fade-up" data-aos-delay="150">
-        <span class="line"></span>
-        <img class="ornament" src="assets/icons/flower-shape-of-five-petals-svgrepo-com.svg" alt="" width="28"
-          height="28">
-        <span class="line"></span>
-      </div>
-      <div class="locations-timeline" data-aos="fade-up" data-aos-delay="200">
-        <!-- ---- Civil ---- -->
-        <div class="timeline-item">
-          <div class="timeline-node">
-            <div class="timeline-icon">
-              <i data-lucide="house"></i>
+          <!-- 2. Ready / Form State -->
+          <div class="rsvp-state rsvp-state-ready" id="rsvp-ready-view">
+            <div class="rsvp-guest-header">
+              <span class="rsvp-welcome-label">Invitación para</span>
+              <h3 class="rsvp-guest-name" id="rsvp-guest-name">—</h3>
+              <div class="rsvp-badges">
+                <span class="rsvp-badge quota-badge" id="rsvp-quota-badge">
+                  <i data-lucide="users"></i>
+                  <span id="rsvp-quota-text">Cupo: — personas</span>
+                </span>
+                <span class="rsvp-badge status-badge" id="rsvp-status-badge">
+                  <i data-lucide="clock"></i>
+                  <span id="rsvp-status-text">Pendiente</span>
+                </span>
+              </div>
             </div>
-          </div>
-          <div class="timeline-content">
-            <p class="location-label">Civil</p>
-            <h3 class="location-name">CDR Registro de las Personas</h3>
-            <p class="location-address">Cnel. López 1995 (4° Tramo Costanera)</p>
-            <div class="timeline-meta">
-              <span class="location-time">
-                <i data-lucide="clock"></i>
-                18:30 hs
-              </span>
-              <a class="btn-maps-sm" href="https://maps.app.goo.gl/AEhemQeQ8kyQ3RwEA" target="_blank"
-                rel="noopener noreferrer">
-                <i data-lucide="map-pin"></i>
-                Ver mapa
-                <i data-lucide="external-link"></i>
-              </a>
+
+            <div class="rsvp-alert-notice" id="rsvp-already-confirmed-banner" style="display: none;">
+              <i data-lucide="info"></i>
+              <span id="rsvp-already-confirmed-text"></span>
             </div>
-          </div>
-        </div>
-        <!-- ---- Ceremonia ---- -->
-        <div class="timeline-item">
-          <div class="timeline-node">
-            <div class="timeline-icon">
-              <i data-lucide="church"></i>
-            </div>
-          </div>
-          <div class="timeline-content">
-            <p class="location-label">Ceremonia</p>
-            <h3 class="location-name">Sagrado Corazón de Jesús</h3>
-            <p class="location-address">Av. Juan Domingo Perón 1426</p>
-            <div class="timeline-meta">
-              <span class="location-time">
-                <i data-lucide="clock"></i>
-                20:00 hs
-              </span>
-              <a class="btn-maps-sm" href="https://maps.app.goo.gl/kHfJcasiymLKociy9" target="_blank"
-                rel="noopener noreferrer">
-                <i data-lucide="map-pin"></i>
-                Ver mapa
-                <i data-lucide="external-link"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        <!-- ---- Recepción ---- -->
-        <div class="timeline-item">
-          <div class="timeline-node">
-            <div class="timeline-icon">
-              <i data-lucide="party-popper"></i>
-            </div>
-          </div>
-          <div class="timeline-content">
-            <p class="location-label">Recepción</p>
-            <h3 class="location-name">QUINCHO "DON MENDEZ"</h3>
-            <p class="location-address">C. 144 y 124, N3303 Posadas, Misiones</p>
-            <div class="timeline-meta">
-              <span class="location-time">
-                <i data-lucide="clock"></i>
-                21:00 hs
-              </span>
-              <a class="btn-maps-sm" href="https://maps.app.goo.gl/iwke9nWC4by1o56v7" target="_blank"
-                rel="noopener noreferrer">
-                <i data-lucide="map-pin"></i>
-                Ver mapa
-                <i data-lucide="external-link"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
 
-  </section>
-
-  <!-- ============================================================
-       SECTION 4 — RSVP / Confirm Attendance
-       ============================================================ -->
-  <section id="rsvp" class="section-padding rsvp-hidden">
-    <div class="container">
-      <div class="rsvp-icon" data-aos="zoom-in">
-        <img src="assets/icons/couple-marriage-heart-svgrepo-com.svg" alt="" width="56" height="56">
-      </div>
-
-      <h2 class="rsvp-title" data-aos="fade-up">Confirmar Asistencia</h2>
-
-      <p class="rsvp-text" data-aos="fade-up" data-aos-delay="100">
-        Nos encantaría contar con tu presencia en este día tan especial.
-        Por favor, confirma tu asistencia para que podamos preparar
-        todo con mucho cariño.
-      </p>
-
-      <div class="section-divider" data-aos="fade-up" data-aos-delay="150">
-        <span class="line"></span>
-        <img class="ornament" src="assets/icons/heart-angle-svgrepo-com.svg" alt="" width="28" height="28">
-        <span class="line"></span>
-      </div>
-
-      <!-- Dynamic RSVP Card -->
-      <div id="rsvp-card" class="rsvp-card" data-state="loading" data-aos="fade-up" data-aos-delay="200">
-        <!-- 1. Loading State -->
-        <div class="rsvp-state rsvp-state-loading" id="rsvp-loading-view">
-          <div class="rsvp-spinner" aria-hidden="true"></div>
-          <p class="rsvp-loading-text">Consultando tu invitación...</p>
-        </div>
-
-        <!-- 2. Invalid Invitation State -->
-        <div class="rsvp-state rsvp-state-invalid" id="rsvp-invalid-view">
-          <div class="rsvp-status-icon error">
-            <i data-lucide="alert-circle"></i>
-          </div>
-          <h3 class="rsvp-state-title">Invitación no válida</h3>
-          <p class="rsvp-state-desc">
-            No encontramos ninguna invitación con el código proporcionado. Por favor, verificá haber ingresado al enlace completo que te enviamos.
-          </p>
-        </div>
-
-        <!-- 3. Network / Connection Error State -->
-        <div class="rsvp-state rsvp-state-error" id="rsvp-error-view">
-          <div class="rsvp-status-icon error">
-            <i data-lucide="wifi-off"></i>
-          </div>
-          <h3 class="rsvp-state-title">Error de conexión</h3>
-          <p class="rsvp-state-desc" id="rsvp-error-text">
-            No pudimos conectar con el servidor para consultar tu invitación. Por favor, revisá tu conexión e intentá de nuevo.
-          </p>
-          <button type="button" class="btn-rsvp-secondary" id="rsvp-retry-btn">
-            <i data-lucide="refresh-cw"></i>
-            Reintentar
-          </button>
-        </div>
-
-        <!-- 4. Ready / Form State -->
-        <div class="rsvp-state rsvp-state-ready" id="rsvp-ready-view">
-          <div class="rsvp-guest-header">
-            <span class="rsvp-welcome-label">Invitación para</span>
-            <h3 class="rsvp-guest-name" id="rsvp-guest-name">—</h3>
-            <div class="rsvp-badges">
-              <span class="rsvp-badge quota-badge" id="rsvp-quota-badge">
-                <i data-lucide="users"></i>
-                <span id="rsvp-quota-text">Cupo: — personas</span>
-              </span>
-              <span class="rsvp-badge status-badge" id="rsvp-status-badge">
-                <i data-lucide="clock"></i>
-                <span id="rsvp-status-text">Pendiente</span>
-              </span>
-            </div>
-          </div>
-
-          <div class="rsvp-alert-notice" id="rsvp-already-confirmed-banner" style="display: none;">
-            <i data-lucide="info"></i>
-            <span id="rsvp-already-confirmed-text"></span>
-          </div>
-
-          <form id="rsvp-form" class="rsvp-form" novalidate>
-            <div class="rsvp-form-group">
-              <label class="rsvp-form-label">
-                ¿Cuántas personas asistirán?
-              </label>
-              <div class="rsvp-stepper-wrap">
-                <div class="rsvp-stepper">
-                  <button type="button" class="rsvp-step-btn" id="rsvp-minus-btn" aria-label="Disminuir asistentes">
-                    <i data-lucide="minus"></i>
-                  </button>
-                  <div class="rsvp-count-display">
-                    <input type="number" id="rsvp-cantidad" name="cantidad" min="0" max="1" value="1" readonly>
-                    <span class="rsvp-count-unit" id="rsvp-count-unit">persona</span>
+            <form id="rsvp-form" class="rsvp-form" novalidate>
+              <div class="rsvp-form-group">
+                <label class="rsvp-form-label">
+                  ¿Cuántas personas asistirán?
+                </label>
+                <div class="rsvp-stepper-wrap">
+                  <div class="rsvp-stepper">
+                    <button type="button" class="rsvp-step-btn" id="rsvp-minus-btn" aria-label="Disminuir asistentes">
+                      <i data-lucide="minus"></i>
+                    </button>
+                    <div class="rsvp-count-display">
+                      <input type="number" id="rsvp-cantidad" name="cantidad" min="0" max="1" value="1" readonly>
+                      <span class="rsvp-count-unit" id="rsvp-count-unit">persona</span>
+                    </div>
+                    <button type="button" class="rsvp-step-btn" id="rsvp-plus-btn" aria-label="Aumentar asistentes">
+                      <i data-lucide="plus"></i>
+                    </button>
                   </div>
-                  <button type="button" class="rsvp-step-btn" id="rsvp-plus-btn" aria-label="Aumentar asistentes">
-                    <i data-lucide="plus"></i>
-                  </button>
+                </div>
+                <p class="rsvp-helper-text" id="rsvp-stepper-helper">
+                  Podés confirmar entre 0 y <span id="rsvp-max-helper">1</span> asistentes. (0 indica que no podrán
+                  asistir).
+                </p>
+              </div>
+
+              <div class="rsvp-form-group">
+                <label for="rsvp-nota" class="rsvp-form-label">
+                  Nota o dedicatoria <span class="rsvp-optional">(opcional)</span>
+                </label>
+                <textarea id="rsvp-nota" name="nota" class="rsvp-textarea" rows="3" maxlength="300"
+                  placeholder="¿Alguna restricción alimentaria o dedicatoria para los novios?"></textarea>
+                <div class="rsvp-textarea-footer">
+                  <span class="rsvp-char-counter"><span id="rsvp-char-count">0</span>/300</span>
                 </div>
               </div>
-              <p class="rsvp-helper-text" id="rsvp-stepper-helper">
-                Podés confirmar entre 0 y <span id="rsvp-max-helper">1</span> asistentes. (0 indica que no podrán asistir).
-              </p>
-            </div>
 
-            <div class="rsvp-form-group">
-              <label for="rsvp-nota" class="rsvp-form-label">
-                Nota o dedicatoria <span class="rsvp-optional">(opcional)</span>
-              </label>
-              <textarea id="rsvp-nota" name="nota" class="rsvp-textarea" rows="3" maxlength="300"
-                placeholder="¿Alguna restricción alimentaria o dedicatoria para los novios?"></textarea>
-              <div class="rsvp-textarea-footer">
-                <span class="rsvp-char-counter"><span id="rsvp-char-count">0</span>/300</span>
+              <div class="rsvp-submit-container">
+                <button type="submit" class="btn-rsvp" id="rsvp-submit-btn">
+                  <i data-lucide="heart"></i>
+                  <span id="rsvp-submit-text">Confirmar mi asistencia</span>
+                </button>
               </div>
-            </div>
 
-            <div class="rsvp-submit-container">
-              <button type="submit" class="btn-rsvp" id="rsvp-submit-btn">
-                <i data-lucide="heart"></i>
-                <span id="rsvp-submit-text">Confirmar mi asistencia</span>
-              </button>
-            </div>
-
-            <div class="rsvp-feedback" id="rsvp-form-feedback" role="status" aria-live="polite"></div>
-          </form>
-        </div>
-
-        <!-- 5. Success State -->
-        <div class="rsvp-state rsvp-state-success" id="rsvp-success-view">
-          <div class="rsvp-status-icon success">
-            <i data-lucide="check-circle-2"></i>
+              <div class="rsvp-feedback" id="rsvp-form-feedback" role="status" aria-live="polite"></div>
+            </form>
           </div>
-          <h3 class="rsvp-state-title" id="rsvp-success-title">¡Asistencia registrada!</h3>
-          <p class="rsvp-state-desc" id="rsvp-success-desc">
-            Muchas gracias por confirmar. ¡Nos llena de ilusión compartir este momento especial con vos!
-          </p>
-          <div class="rsvp-success-summary" id="rsvp-success-summary"></div>
-          <button type="button" class="btn-rsvp-secondary" id="rsvp-edit-btn">
-            <i data-lucide="edit-3"></i>
-            Modificar respuesta
-          </button>
+
+          <!-- 5. Success State -->
+          <div class="rsvp-state rsvp-state-success" id="rsvp-success-view">
+            <div class="rsvp-status-icon success">
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <h3 class="rsvp-state-title" id="rsvp-success-title">¡Asistencia registrada!</h3>
+            <p class="rsvp-state-desc" id="rsvp-success-desc">
+              Muchas gracias por confirmar. ¡Nos llena de ilusión compartir este momento especial con vos!
+            </p>
+            <div class="rsvp-success-summary" id="rsvp-success-summary"></div>
+            <button type="button" class="btn-rsvp-secondary" id="rsvp-edit-btn">
+              <i data-lucide="edit-3"></i>
+              Modificar respuesta
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============================================================
+    <!-- ============================================================
        FOOTER
        ============================================================ -->
-  <footer class="footer">
-    <p>Hecho con <span class="heart-icon">♥</span> para Mabel & Jorge</p>
-  </footer>
+    <footer class="footer">
+      <p>Hecho con <span class="heart-icon">♥</span> para Mabel & Jorge</p>
+    </footer>
+  </main>
 
   <!-- ============================================================
        FLOATING CONTROLS

@@ -73,7 +73,7 @@ select {
 
 /* ---------- Light Theme Override ---------- */
 .light-theme {
-  --bg-primary: #EDE8D0;
+  --bg-primary: #e3d5c9;
   --bg-secondary: #f5f0e1;
   --bg-card: rgba(128, 255, 0, 0.06);
   --bg-card-border: rgba(128, 255, 0, 0.22);
@@ -137,6 +137,99 @@ svg {
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
+}
+
+.cover {
+  position: fixed;
+  inset: 0;
+  /* reemplaza top/left/width/height + translate */
+  z-index: 999;
+  display: flex;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.cover .left,
+.cover .right {
+  flex: 0 0 50%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: 2s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.cover .left {
+  background-image: url('assets/img/Sello romántico M&J - left.png');
+  background-position: right center;
+  /* el borde pegado al centro */
+}
+
+.cover .right {
+  background-image: url('assets/img/Sello romántico M&J - right.png');
+  background-position: left center;
+  /* el borde pegado al centro */
+}
+
+/* Estado abierto */
+.cover.open .left {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.cover.open .right {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+/* Cuando termina la animación, deja de bloquear los clicks */
+.cover.done {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ---------- Connection Error Screen (Full Page) ---------- */
+.connection-error-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  background: var(--bg-primary);
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1000;
+}
+
+.connection-error-card {
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Visibility rules based on html state */
+html.state-error #cover,
+html.state-error #wedding-content,
+html.state-error .theme-toggle,
+html.state-error .floating-controls {
+  display: none !important;
+}
+
+html.state-error #connection-error-screen {
+  display: flex !important;
+}
+
+html.state-validating #wedding-content {
+  display: none !important;
+}
+
+html.state-valid #connection-error-screen {
+  display: none !important;
 }
 
 /* ---------- Section divider ornament ---------- */
@@ -1126,6 +1219,7 @@ svg {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -1136,6 +1230,7 @@ svg {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1147,6 +1242,7 @@ svg {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);

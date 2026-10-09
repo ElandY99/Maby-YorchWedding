@@ -95,11 +95,7 @@
     setMusicIcon(false);
   }
 
-  // Intento de autoplay (funciona en PC; en móvil suele ser bloqueado)
-  playMusic();
-
-  // Reintentar con el primer gesto REAL del usuario, sin quitar
-  // los listeners hasta que el play tenga éxito.
+  // Reintentar con el primer gesto REAL del usuario cuando la invitación sea válida
   const interactionEvents = ['click', 'touchend', 'keydown'];
 
   function onFirstInteraction() {
@@ -120,9 +116,12 @@
     );
   }
 
-  interactionEvents.forEach((evt) =>
-    document.addEventListener(evt, onFirstInteraction, { passive: true })
-  );
+  function enableMusicInteractions() {
+    removeInteractionListeners();
+    interactionEvents.forEach((evt) =>
+      document.addEventListener(evt, onFirstInteraction, { passive: true })
+    );
+  }
 
   // ----------------------------------------------------------------
   // Botón de música
@@ -134,16 +133,45 @@
     } else {
       playMusic();
     }
-    // Si el usuario usa el botón, ya no hace falta seguir escuchando
     removeInteractionListeners();
   }
 
-  // Evita que el toque del botón dispare el "first interaction" del documento
-  ['touchstart', 'touchend'].forEach((evt) =>
-    musicBtn.addEventListener(evt, (e) => e.stopPropagation(), { passive: true })
-  );
+  if (musicBtn) {
+    ['touchstart', 'touchend'].forEach((evt) =>
+      musicBtn.addEventListener(evt, (e) => e.stopPropagation(), { passive: true })
+    );
+    musicBtn.addEventListener('click', handleButtonToggle);
+  }
 
-  musicBtn.addEventListener('click', handleButtonToggle);
+  // ----------------------------------------------------------------
+  // Cover Controller (#cover)
+  // ----------------------------------------------------------------
+  const cover = document.getElementById('cover');
+  let isInvitationValid = false;
+  let coverPendingOpen = false;
+
+  function openCover() {
+    if (!cover) return;
+    cover.classList.add('open');
+    playMusic();
+  }
+
+  if (cover) {
+    cover.addEventListener('click', function () {
+      if (isInvitationValid) {
+        openCover();
+      } else {
+        coverPendingOpen = true;
+      }
+    });
+
+    const coverRight = cover.querySelector('.right');
+    if (coverRight) {
+      coverRight.addEventListener('transitionend', function () {
+        cover.classList.add('done');
+      });
+    }
+  }
 
   // ----------------------------------------------------------------
   // 4. Scroll Indicator
@@ -409,47 +437,16 @@
   });
 
   // ----------------------------------------------------------------
-  // 6. Attendance Confirmation (RSVP) Controller
+  // 6. Attendance Confirmation (RSVP) & Invitation Controller
   // ----------------------------------------------------------------
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyze6HMoVHoSTzEoyDVPly419Ccdg6-2gtCd0doBVgwy85lrO3Ms-0Nh6NFA1toI7k67A/exec';
   const STORAGE_KEY_CODE = 'invitation_code';
 
   const rsvpSection = document.getElementById('rsvp');
   const rsvpCard = document.getElementById('rsvp-card');
-
-  // Resolve invitation code from URL or session storage
-  const urlParams = new URLSearchParams(window.location.search);
-  let invitationCode = urlParams.get('code');
-
-  if (invitationCode) {
-    invitationCode = invitationCode.trim();
-    try {
-      sessionStorage.setItem(STORAGE_KEY_CODE, invitationCode);
-    } catch (_) {
-      // Ignore storage errors in restricted iframe/browser modes
-    }
-  } else {
-    try {
-      invitationCode = (sessionStorage.getItem(STORAGE_KEY_CODE) || '').trim();
-    } catch (_) {
-      invitationCode = '';
-    }
-  }
-
-  // If no invitation code is provided, keep the RSVP section completely hidden
-  if (!invitationCode) {
-    if (rsvpSection) {
-      rsvpSection.classList.add('rsvp-hidden');
-    }
-    return;
-  }
-
-  // Reveal RSVP section for invited guests
-  if (rsvpSection) {
-    rsvpSection.classList.remove('rsvp-hidden');
-  }
-
-  if (!rsvpCard) return;
+  const errorScreen = document.getElementById('connection-error-screen');
+  const weddingContent = document.getElementById('wedding-content');
+  const globalRetryBtn = document.getElementById('global-retry-btn');
 
   // View Elements
   const guestNameEl = document.getElementById('rsvp-guest-name');
@@ -485,7 +482,96 @@
   let currentAttendees = 1;
   let maxQuota = 1;
 
+  function setGlobalState(state) {
+    document.documentElement.classList.remove('state-error', 'state-valid', 'state-validating');
+    document.documentElement.classList.add('state-' + state);
+  }
+
+  function showErrorState() {
+    isInvitationValid = false;
+    coverPendingOpen = false;
+    setGlobalState('error');
+
+    if (errorScreen) {
+      errorScreen.style.display = 'flex';
+      lucide.createIcons({ nodes: [errorScreen] });
+    }
+    if (cover) {
+      cover.style.display = 'none';
+    }
+    if (weddingContent) {
+      weddingContent.style.display = 'none';
+    }
+
+    pauseMusic();
+    removeInteractionListeners();
+  }
+
+  function showValidState(data) {
+    isInvitationValid = true;
+    setGlobalState('valid');
+
+    if (errorScreen) {
+      errorScreen.style.display = 'none';
+    }
+    if (weddingContent) {
+      weddingContent.style.display = 'block';
+    }
+    if (cover) {
+      cover.style.display = 'flex';
+    }
+
+    if (rsvpSection) {
+      rsvpSection.classList.remove('rsvp-hidden');
+    }
+
+    applyGuestData(data);
+
+    if (typeof AOS !== 'undefined') {
+      AOS.refreshHard();
+    }
+    resizeCanvas();
+
+    enableMusicInteractions();
+
+    if (coverPendingOpen) {
+      openCover();
+    }
+  }
+
+  // Listener para el botón "Reintentar" del cartel de error de conexión
+  if (globalRetryBtn) {
+    globalRetryBtn.addEventListener('click', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = (urlParams.get('code') || '').trim();
+      if (code) {
+        globalRetryBtn.disabled = true;
+        const spanEl = globalRetryBtn.querySelector('span');
+        const origText = spanEl ? spanEl.textContent : 'Reintentar';
+        if (spanEl) spanEl.textContent = 'Reintentando...';
+
+        fetchInvitation().finally(() => {
+          globalRetryBtn.disabled = false;
+          if (spanEl) spanEl.textContent = origText;
+        });
+      } else {
+        window.location.reload();
+      }
+    });
+  }
+
+  // Resolve invitation code from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  let invitationCode = (urlParams.get('code') || '').trim();
+
+  // Si no viene el atributo code en el link, mostrar solo el cartel de Error de conexión
+  if (!invitationCode) {
+    showErrorState();
+    return;
+  }
+
   function setRsvpState(state) {
+    if (!rsvpCard) return;
     rsvpCard.setAttribute('data-state', state);
     lucide.createIcons({ nodes: [rsvpCard] });
   }
@@ -500,15 +586,18 @@
   }
 
   function updateStepperUI() {
+    if (!cantidadInput) return;
     cantidadInput.value = currentAttendees;
-    countUnitEl.textContent = currentAttendees === 1 ? 'persona' : 'personas';
-    minusBtn.disabled = currentAttendees <= 0;
-    plusBtn.disabled = currentAttendees >= maxQuota;
+    if (countUnitEl) countUnitEl.textContent = currentAttendees === 1 ? 'persona' : 'personas';
+    if (minusBtn) minusBtn.disabled = currentAttendees <= 0;
+    if (plusBtn) plusBtn.disabled = currentAttendees >= maxQuota;
 
-    if (currentAttendees === 0) {
-      stepperHelperEl.innerHTML = '<strong>Registrarás que no podrán asistir.</strong> Podés cambiarlo si lo deseás.';
-    } else {
-      stepperHelperEl.innerHTML = `Podés confirmar entre 0 y <strong>${maxQuota}</strong> asistentes. (0 indica que no podrán asistir).`;
+    if (stepperHelperEl) {
+      if (currentAttendees === 0) {
+        stepperHelperEl.innerHTML = '<strong>Registrarás que no podrán asistir.</strong> Podés cambiarlo si lo deseás.';
+      } else {
+        stepperHelperEl.innerHTML = `Podés confirmar entre 0 y <strong>${maxQuota}</strong> asistentes. (0 indica que no podrán asistir).`;
+      }
     }
   }
 
@@ -516,40 +605,42 @@
     invitationData = data;
     maxQuota = Number.isInteger(Number(data.cupo)) ? Math.max(0, Number(data.cupo)) : 1;
 
-    guestNameEl.textContent = data.nombre || 'Invitado/a Especial';
-    quotaTextEl.textContent = `Cupo: ${maxQuota} ${maxQuota === 1 ? 'persona' : 'personas'}`;
-    maxHelperEl.textContent = maxQuota;
+    if (guestNameEl) guestNameEl.textContent = data.nombre || 'Invitado/a Especial';
+    if (quotaTextEl) quotaTextEl.textContent = `Cupo: ${maxQuota} ${maxQuota === 1 ? 'persona' : 'personas'}`;
+    if (maxHelperEl) maxHelperEl.textContent = maxQuota;
 
-    statusBadgeEl.classList.remove('confirmed', 'declined', 'pending');
+    if (statusBadgeEl) statusBadgeEl.classList.remove('confirmed', 'declined', 'pending');
 
     const isConfirmed = String(data.confirmado || '').trim().toUpperCase() === 'SI';
     const savedQty = Number(data.cantidad);
 
     if (isConfirmed && Number.isInteger(savedQty)) {
       if (savedQty > 0) {
-        statusBadgeEl.classList.add('confirmed');
-        statusTextEl.textContent = `Confirmado (${savedQty})`;
-        alreadyConfirmedText.textContent = `Ya confirmaste asistencia para ${savedQty} ${savedQty === 1 ? 'persona' : 'personas'}. Podés actualizar tu respuesta abajo si hubo algún cambio.`;
-        alreadyConfirmedBanner.style.display = 'flex';
+        if (statusBadgeEl) statusBadgeEl.classList.add('confirmed');
+        if (statusTextEl) statusTextEl.textContent = `Confirmado (${savedQty})`;
+        if (alreadyConfirmedText) alreadyConfirmedText.textContent = `Ya confirmaste asistencia para ${savedQty} ${savedQty === 1 ? 'persona' : 'personas'}. Podés actualizar tu respuesta abajo si hubo algún cambio.`;
+        if (alreadyConfirmedBanner) alreadyConfirmedBanner.style.display = 'flex';
         currentAttendees = Math.min(savedQty, maxQuota);
       } else {
-        statusBadgeEl.classList.add('declined');
-        statusTextEl.textContent = 'No asistirá';
-        alreadyConfirmedText.textContent = 'Registraste anteriormente que no podrás asistir. Podés cambiarlo a continuación si ahora podés venir.';
-        alreadyConfirmedBanner.style.display = 'flex';
+        if (statusBadgeEl) statusBadgeEl.classList.add('declined');
+        if (statusTextEl) statusTextEl.textContent = 'No asistirá';
+        if (alreadyConfirmedText) alreadyConfirmedText.textContent = 'Registraste anteriormente que no podrás asistir. Podés cambiarlo a continuación si ahora podés venir.';
+        if (alreadyConfirmedBanner) alreadyConfirmedBanner.style.display = 'flex';
         currentAttendees = 0;
       }
-      submitTextEl.textContent = 'Actualizar confirmación';
+      if (submitTextEl) submitTextEl.textContent = 'Actualizar confirmación';
     } else {
-      statusBadgeEl.classList.add('pending');
-      statusTextEl.textContent = 'Pendiente';
-      alreadyConfirmedBanner.style.display = 'none';
+      if (statusBadgeEl) statusBadgeEl.classList.add('pending');
+      if (statusTextEl) statusTextEl.textContent = 'Pendiente';
+      if (alreadyConfirmedBanner) alreadyConfirmedBanner.style.display = 'none';
       currentAttendees = maxQuota > 0 ? maxQuota : 0;
-      submitTextEl.textContent = 'Confirmar mi asistencia';
+      if (submitTextEl) submitTextEl.textContent = 'Confirmar mi asistencia';
     }
 
-    notaInput.value = data.nota || '';
-    charCountEl.textContent = notaInput.value.length;
+    if (notaInput) {
+      notaInput.value = data.nota || '';
+      if (charCountEl) charCountEl.textContent = notaInput.value.length;
+    }
 
     updateStepperUI();
     setRsvpState('ready');
@@ -557,13 +648,16 @@
 
   // Lookup invitation via GET
   function fetchInvitation() {
+    setGlobalState('validating');
     setRsvpState('loading');
-    formFeedbackEl.textContent = '';
-    formFeedbackEl.className = 'rsvp-feedback';
+    if (formFeedbackEl) {
+      formFeedbackEl.textContent = '';
+      formFeedbackEl.className = 'rsvp-feedback';
+    }
 
     const url = `${APPS_SCRIPT_URL}?code=${encodeURIComponent(invitationCode)}`;
 
-    fetch(url, {
+    return fetch(url, {
       method: 'GET',
       cache: 'no-store'
     })
@@ -575,17 +669,23 @@
       })
       .then(data => {
         if (data && data.ok) {
-          applyGuestData(data);
-        } else if (data && data.error === 'codigo_invalido') {
-          setRsvpState('invalid');
+          try {
+            sessionStorage.setItem(STORAGE_KEY_CODE, invitationCode);
+          } catch (_) {}
+          showValidState(data);
         } else {
-          errorTextEl.textContent = 'No se pudo obtener la información de tu invitación. Por favor intenta de nuevo.';
-          setRsvpState('error');
+          // Código inválido o incorrecto -> Error de conexión screen
+          try {
+            sessionStorage.removeItem(STORAGE_KEY_CODE);
+          } catch (_) {}
+          showErrorState();
         }
       })
       .catch(() => {
-        errorTextEl.textContent = 'No pudimos conectar con el servidor para consultar tu invitación. Por favor, revisá tu conexión e intentá de nuevo.';
-        setRsvpState('error');
+        try {
+          sessionStorage.removeItem(STORAGE_KEY_CODE);
+        } catch (_) {}
+        showErrorState();
       });
   }
 
@@ -711,11 +811,15 @@
       });
   });
 
-  retryBtn.addEventListener('click', fetchInvitation);
+  if (retryBtn) {
+    retryBtn.addEventListener('click', fetchInvitation);
+  }
 
-  editBtn.addEventListener('click', () => {
-    applyGuestData(invitationData);
-  });
+  if (editBtn) {
+    editBtn.addEventListener('click', () => {
+      applyGuestData(invitationData);
+    });
+  }
 
   // Start lookup
   fetchInvitation();
