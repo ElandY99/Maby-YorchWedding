@@ -84,11 +84,11 @@ select {
   --text-secondary: #3d3d3d;
   --text-muted: #666;
   --heart-color: #d94f7a;
-  --petal-color: #c95d7b;
+  --petal-color: rgb(201, 93, 123);
   --divider: rgba(197, 122, 114, 0.25);
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.08);
   --glass-bg: rgba(245, 240, 225, 0.75);
-  --glass-border: rgba(128, 255, 0, 0.15);
+  --glass-border: rgba(201, 93, 123, 0.15);
   --btn-gradient: linear-gradient(135deg, #c7928e 0%, #e0a9ac 100%);
   --btn-hover: linear-gradient(135deg, #c99691 0%, #cc9996 100%);
   --shimmer-color: rgba(0, 0, 0, 0.03);
@@ -890,12 +890,12 @@ html.state-valid #connection-error-screen {
 }
 
 .rsvp-badge.status-badge.confirmed {
-  border-color: rgba(128, 255, 0, 0.4);
-  color: #55b300;
+  border-color: var(--petal-color);
+  color: var(--heart-color);
 }
 
 :root:not(.light-theme) .rsvp-badge.status-badge.confirmed {
-  color: #80ff00;
+  color: var(--heart-color);
 }
 
 .rsvp-badge.status-badge.declined {
