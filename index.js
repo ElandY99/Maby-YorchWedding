@@ -25,12 +25,21 @@
   const themeBtn = document.getElementById('theme-toggle-btn');
   const STORAGE_KEY_THEME = 'wedding-theme';
 
+  let currentHeartColor = '#e879a8';
+  let currentPetalColor = '#f5c6d0';
+
+  function updateParticleColors() {
+    currentHeartColor = getComputedStyle(body).getPropertyValue('--heart-color').trim() || '#e879a8';
+    currentPetalColor = getComputedStyle(body).getPropertyValue('--petal-color').trim() || '#f5c6d0';
+  }
+
   function applyTheme(isLight) {
     if (isLight) {
       body.classList.add('light-theme');
     } else {
       body.classList.remove('light-theme');
     }
+    updateParticleColors();
     // Re-render Lucide icons to pick up any class changes
     updateThemeIcon(isLight);
   }
@@ -47,6 +56,8 @@
   const savedTheme = localStorage.getItem(STORAGE_KEY_THEME);
   if (savedTheme === 'light') {
     applyTheme(true);
+  } else {
+    updateParticleColors();
   }
 
   themeBtn.addEventListener('click', function () {
@@ -205,9 +216,9 @@
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  // Read colors from CSS custom properties
+  // Read colors from CSS custom properties on document.body (respects .light-theme)
   function getColor(prop) {
-    return getComputedStyle(document.documentElement).getPropertyValue(prop).trim();
+    return getComputedStyle(body).getPropertyValue(prop).trim();
   }
 
   // Particle class
@@ -261,7 +272,7 @@
 
   Particle.prototype.drawHeart = function () {
     var s = this.size;
-    ctx.fillStyle = getColor('--heart-color');
+    ctx.fillStyle = currentHeartColor;
     ctx.beginPath();
     ctx.moveTo(0, s * 0.35);
     ctx.bezierCurveTo(-s * 0.5, -s * 0.2, -s, s * 0.1, 0, s);
@@ -272,7 +283,7 @@
 
   Particle.prototype.drawPetal = function () {
     var s = this.size;
-    ctx.fillStyle = getColor('--petal-color');
+    ctx.fillStyle = currentPetalColor;
     ctx.beginPath();
     ctx.ellipse(0, 0, s * 0.4, s, 0, 0, Math.PI * 2);
     ctx.closePath();
@@ -671,20 +682,20 @@
         if (data && data.ok) {
           try {
             sessionStorage.setItem(STORAGE_KEY_CODE, invitationCode);
-          } catch (_) {}
+          } catch (_) { }
           showValidState(data);
         } else {
           // Código inválido o incorrecto -> Error de conexión screen
           try {
             sessionStorage.removeItem(STORAGE_KEY_CODE);
-          } catch (_) {}
+          } catch (_) { }
           showErrorState();
         }
       })
       .catch(() => {
         try {
           sessionStorage.removeItem(STORAGE_KEY_CODE);
-        } catch (_) {}
+        } catch (_) { }
         showErrorState();
       });
   }
